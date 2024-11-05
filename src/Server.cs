@@ -10,6 +10,11 @@ const string pong = "+PONG\r\n";
 // Uncomment this block to pass the first stage
 var server = new TcpListener(IPAddress.Any, 6379);
 server.Start();
-var client = server.AcceptSocket(); // wait for client
+var socket = server.AcceptSocket(); // wait for client
 
-await client.SendAsync(Encoding.UTF8.GetBytes(pong), SocketFlags.None);
+while (socket.Connected)
+{
+    var buffer = new byte[1024];
+    await socket.ReceiveAsync(buffer);
+    await socket.SendAsync(Encoding.UTF8.GetBytes(pong), SocketFlags.None);
+}
